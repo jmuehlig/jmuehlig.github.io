@@ -1,1 +1,1 @@
-Sitemap: /jmuehlig.github.io/sitemap.xml
+Sitemap: /https://jmuehlig.github.io/sitemap.xml
