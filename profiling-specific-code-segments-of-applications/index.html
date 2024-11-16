@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="icon" href="jmuehlig.github.io/assets/images/favicon.ico">
+
+<title>Profiling Specific Code Segments of Applications | jmuehlig.github.io</title>
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Profiling Specific Code Segments of Applications | jmuehlig.github.io</title>
+<meta name="generator" content="Jekyll v4.3.3" />
+<meta property="og:title" content="Profiling Specific Code Segments of Applications" />
+<meta name="author" content="jan" />
+<meta property="og:locale" content="en_us" />
+<meta name="description" content="Understanding the interaction between software and hardware has become increasingly essential for building high-performance applications. The architecture of modern hardware systems has grown significantly in complexity, including deep memory hierarchies and advanced CPUs with features like out-of-order execution and sophisticated branch prediction mechanisms." />
+<meta property="og:description" content="Understanding the interaction between software and hardware has become increasingly essential for building high-performance applications. The architecture of modern hardware systems has grown significantly in complexity, including deep memory hierarchies and advanced CPUs with features like out-of-order execution and sophisticated branch prediction mechanisms." />
+<meta property="og:site_name" content="jmuehlig.github.io" />
+<meta property="og:image" content="/jmuehlig.github.io/assets/images/0-performance-counter.webp" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-11-13T00:00:00-02:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="/jmuehlig.github.io/assets/images/0-performance-counter.webp" />
+<meta property="twitter:title" content="Profiling Specific Code Segments of Applications" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"jan"},"dateModified":"2024-11-13T00:00:00-02:00","datePublished":"2024-11-13T00:00:00-02:00","description":"Understanding the interaction between software and hardware has become increasingly essential for building high-performance applications. The architecture of modern hardware systems has grown significantly in complexity, including deep memory hierarchies and advanced CPUs with features like out-of-order execution and sophisticated branch prediction mechanisms.","headline":"Profiling Specific Code Segments of Applications","image":"/jmuehlig.github.io/assets/images/0-performance-counter.webp","mainEntityOfPage":{"@type":"WebPage","@id":"/jmuehlig.github.io/profiling-specific-code-segments-of-applications/"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"/jmuehlig.github.io/assets/images/logo.png"},"name":"jan"},"url":"/jmuehlig.github.io/profiling-specific-code-segments-of-applications/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<link href="jmuehlig.github.io/assets/css/theme.css" rel="stylesheet">
+
+<!-- custom CSS - Remove this if you don't use it or choose to customize the stylesheet with sass-->
+<link href="jmuehlig.github.io/assets/css/custom.css" rel="stylesheet">
+<!-- custom CSS end-->
+    
+
+   
+</head>   
+    
+
+<body class="layout-post">
+
+    
+<!-- Menu Navigation
+================================================== -->
+<div class="navigation-wrap start-header start-style">
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+
+          <a class="navbar-brand text-dark font-weight-bold big d-flex align-items-center" href="jmuehlig.github.io/">
+          
+          <img class="mr-2" src="jmuehlig.github.io/assets/images/logo.png" alt="logo" width="40px"> 
+          
+          </a> 
+          
+
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+              <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+            </svg>
+          </button>
+          
+          <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto font-weight-bold d-flex align-items-center">
+              
+              <li class="nav-item">
+                <a class="nav-link px-3 " href="jmuehlig.github.io/" alt="Home">Home</a>
+              </li>
+              
+              <li class="nav-item">
+                <a class="nav-link px-3 " href="jmuehlig.github.io/contact/" alt="Contact">Contact</a>
+              </li>
+              
+            </ul>
+          </div>
+
+        </div>
+      </nav>
+    </div>  
+
+    
+<!-- Container
+================================================== -->    
+<main class="container">   
+      <!-- Begin Article
+================================================== -->
+<div class="row">
+		<!-- Post -->        
+    
+        
+		<div class="col-sm-12">
+		
+		  <div class="row">
+			  <div class="col-sm-12"> 
+			  
+			    <!-- Post Title -->
+				  <h1 class="posttitle">Profiling Specific Code Segments of Applications</h1> 
+			  
+          <!-- Post Categories -->
+          <div class="after-post-tags">
+            <ul class="tags">
+              
+              
+              <li>
+               <a href="jmuehlig.github.io/categories#cpp">cpp</a>
+              </li>
+              
+              <li>
+               <a href="jmuehlig.github.io/categories#hardware-performance-counter">hardware performance counter</a>
+              </li>
+              
+              <li>
+               <a href="jmuehlig.github.io/categories#linux">linux</a>
+              </li>
+              
+              <li>
+               <a href="jmuehlig.github.io/categories#perf">perf</a>
+              </li>
+              
+            </ul>
+          </div>
+          <!-- End Categories -->
+                  
+				  <!-- Post Date -->
+          <p>
+            <small>
+              <span class="post-date">
+                <time class="post-date" datetime="2024-11-13">
+                  13 Nov 2024
+                </time>
+                
+              </span>
+              
+              <span>
+                – by <a target="_blank" class="link-dark" href="https://www.linkedin.com/in/jan-muehlig/">Jan Mühlig</a>
+              </span>
+              
+            </small>
+          </p>
+			  </div>
+			</div>
+			
+			  <!-- Post Content -->
+			  <div class="article-post serif-font">
+				  <p>Understanding the interaction between software and hardware has become increasingly essential for building high-performance applications. 
+The architecture of modern hardware systems has grown significantly in complexity, including deep memory hierarchies and advanced CPUs with features like out-of-order execution and sophisticated branch prediction mechanisms.</p>
+
+<p><a href="https://perfwiki.github.io/main/">Linux Perf</a>, <a href="https://www.intel.com/content/www/us/en/developer/tools/oneapi/vtune-profiler.html">Intel VTune</a>, and <a href="https://www.amd.com/en/developer/uprof.html">AMD μProf</a> are helpful tools for understanding how applications use system resources. 
+However, as these tools are typically designed as external applications, they profile the entire program, making it difficult to focus on specific code segments like particular functions.
+This limitation is particularly challenging when analyzing micro-benchmarks, where the measured code may represent only a fraction of the overall runtime, or distinguishing between different phases of an application’s execution.</p>
+
+<h2 id="counting-hardware-events">Counting Hardware Events</h2>
+<p>At their core, these tools leverage <em>Performance Monitoring Units</em> (PMUs)–specialized components designed to track hardware events like <em>cache misses</em> and <em>branch mispredictions</em>.
+Although these tools are far more powerful, this discussion will focus on the essentials of hardware event counting.</p>
+
+<p>Consider a random access micro-benchmark designed to access a set of <em>cache lines</em> in a random sequence—a scenario that typically baffles the data prefetcher (<a href="https://github.com/jmuehlig/blog-resource/tree/main/01-profiling-specific-code-segments">see the full source code</a>).
+This pattern often results in roughly <strong>one cache miss per access</strong> within a contiguous data array. 
+The following <a href="https://perfwiki.github.io/main/tutorial/#counting-with-perf-stat"><code>perf stat</code> command</a> tracks low-level hardware events like <em>L1 data cache</em> accesses and references  during the micro-benchmark’s execution:</p>
+
+<div class="language-bash highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>perf stat -e instructions,cycles,L1-dcache-loads,L1-dcache-load-misses -- ./random-access-bench --size 16777216
+</pre></div>
+</div>
+</div>
+
+<p>After running, <code>perf stat</code> displays the results on the command line, in combination with metrics such as <em>instructions per cycle</em>:</p>
+
+<div class="language-bash highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>Performance counter stats for './random-access-bench --size 16777216':
+
+    3,697,089,032      instructions            #    0.63  insn per cycle            
+    5,879,736,227      cycles                                                                
+    1,186,826,319      L1-dcache-loads                                                       
+      103,262,784      L1-dcache-load-misses   #    8.70% of all L1-dcache accesses 
+
+      1.202831289 seconds time elapsed
+
+      0.799309000 seconds user
+      0.403155000 seconds sys
+</pre></div>
+</div>
+</div>
+
+<p>Zooming into details, the results reveal <code>103,262,784</code> <em>L1d</em> misses for <code>16,777,216</code> items, which translates to \(\frac{103,262,784}{16,777,216} \approx 6\) misses per item. 
+This number significantly surpasses the <strong>anticipated single cache miss</strong> per item.
+The source of this discrepancy lies in the comprehensive scope of the <code>perf stat</code> command, which records events throughout the entire runtime of the benchmark. 
+This includes the initialization stage of the benchmark where both the data and pattern arrays are allocated and filled.
+Ideally, however, profiling should be confined to the specific segment of the code that interacts directly with the data array to achieve more accurate metrics.</p>
+
+<p>One effective strategy for more control over profiling is to start and stop hardware counters at specific code segments using file descriptors. 
+This technique is well-documented in the <a href="https://man7.org/linux/man-pages/man1/perf-stat.1.html"><code>perf stat</code> man page</a>. 
+Pramod Kumbhar provides a practical guide to implementing this technique on <a href="https://pramodkumbhar.com/2024/04/linux-perf-measuring-specific-code-sections-with-pause-resume-apis/">his blog</a>, though some might find the approach somewhat cumbersome to implement.</p>
+
+<h2 id="controlling-performance-counters-from-c-applications">Controlling Performance Counters from C++ Applications</h2>
+<p>Another strategy for achieving refined control over PMUs is to leverage the <em>perf subsystem</em> directly from C and C++ applications through the <a href="https://man7.org/linux/man-pages/man2/perf_event_open.2.html"><code>perf_event_open</code> system call</a>. 
+Given the complexity of this interface, various libraries have been developed to simplify interaction by embedding the <code>perf_event_open</code> system call into their framework. 
+Notable examples include <a href="https://github.com/icl-utk-edu/papi">PAPI</a>, <a href="https://github.com/viktorleis/perfevent">PerfEvent</a>, and <a href="https://github.com/jmuehlig/perf-cpp">perf-cpp</a>, each designed to offer a more accessible gateway to these advanced functionalities.</p>
+
+<p>This article will specifically explore <a href="https://github.com/jmuehlig/perf-cpp">perf-cpp</a> and demonstrate practical examples of how to activate and deactivate hardware performance counters for targeted code segments. 
+The <code>perf::EventCounter</code> class in <em>perf-cpp</em> allows users to define which events to measure and provides <code>start()</code> and <code>stop()</code> methods to manage the counters.
+Below is a code snippet that sets up the <code>EventCounter</code> and focuses the measurement on the desired code segment:</p>
+
+<div class="language-cpp highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;perfcpp/event_counter.h&gt;</span>
+
+<span style="color:#777">/// Initialize the hardware event counter</span>
+<span style="color:#088;font-weight:bold">auto</span> counters = perf::CounterDefinition{};
+<span style="color:#088;font-weight:bold">auto</span> event_counter = perf::EventCounter{ counters };
+
+<span style="color:#777">/// Specify hardware events to count</span>
+event_counter.add({<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">instructions</span><span style="color:#710">&quot;</span></span>, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">cycles</span><span style="color:#710">&quot;</span></span>, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">cache-references</span><span style="color:#710">&quot;</span></span>, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">cache-misses</span><span style="color:#710">&quot;</span></span>});
+
+<span style="color:#777">/// Setup benchmark here (this will not be measured)</span>
+<span style="color:#080;font-weight:bold">struct</span> <span style="color:#088;font-weight:bold">alignas</span>(<span style="color:#00D">64</span>U) cache_line { std::uint64_t value; };
+<span style="color:#088;font-weight:bold">auto</span> data = std::vector&lt;cache_line&gt;{};
+<span style="color:#088;font-weight:bold">auto</span> indices = std::vector&lt;std::uint64_t&gt;{};
+<span style="color:#777">/// Fill both vectors here...</span>
+
+<span style="color:#088;font-weight:bold">auto</span> sum = <span style="color:#00D">0</span>ULL;
+
+<span style="color:#777">/// Run the workload and count hardware events</span>
+event_counter.start();
+<span style="color:#080;font-weight:bold">for</span> (<span style="color:#088;font-weight:bold">const</span> <span style="color:#088;font-weight:bold">auto</span> index : indices) {
+    sum += data[index]; <span style="color:#777">// &lt;-- critical memory access</span>
+}
+<span style="color:#080;font-weight:bold">asm</span> <span style="color:#088;font-weight:bold">volatile</span>(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#710">&quot;</span></span> : : <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">r,m</span><span style="color:#710">&quot;</span></span>(value) : <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">memory</span><span style="color:#710">&quot;</span></span>); <span style="color:#777">// Ensure the compiler will not optimize sum away</span>
+event_counter.stop();
+</pre></div>
+</div>
+</div>
+
+<p>Once the <code>EventCounter</code> is initiated and the events of interest are added, we set up the benchmark by initializing the data and pattern arrays. 
+Enclosing the workload we wish to measure with <code>start()</code> and <code>stop()</code> calls enables precise monitoring of that particular code segment. 
+Upon stopping the counter, the <code>EventCounter</code> can be queried to obtain the measured events:</p>
+
+<div class="language-cpp highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span style="color:#088;font-weight:bold">const</span> <span style="color:#088;font-weight:bold">auto</span> result = event_counter.result();
+
+<span style="color:#777">/// Print the performance counters.</span>
+<span style="color:#080;font-weight:bold">for</span> (<span style="color:#088;font-weight:bold">const</span> <span style="color:#088;font-weight:bold">auto</span> [name, value] : result)
+{
+    std::cout &lt;&lt; value &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20"> </span><span style="color:#710">&quot;</span></span> &lt;&lt; name &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20"> (</span><span style="color:#710">&quot;</span></span> &lt;&lt; value / <span style="color:#00D">16777216</span> &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20"> per access)</span><span style="color:#710">&quot;</span></span> &lt;&lt; std::endl;
+}
+</pre></div>
+</div>
+</div>
+
+<p>The output reflects only the activity during the benchmark, effectively excluding the initial setup phase where data is allocated, and patterns are established:</p>
+
+<div class="language-bash highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>102,284,667 instructions            (6.09664 per access)
+992,091,716 cycles                  (59.1333 per access)
+ 34,227,532 L1-dcache-loads         (2.04012 per access)
+ 18,944,008 L1-dcache-load-misses   (1.12915 per access)
+</pre></div>
+</div>
+</div>
+
+<p>The results obtained are markedly more explicable than those we got from the <code>perf stat</code> command.
+We observe two <em>L1d cache references</em> per access: one for the randomly accessed cache line and another for the index of the pattern array.
+Additionally, there are approximately <code>1.3</code> <em>cache misses</em>—one for each data cache line and <code>0.125</code> for the access index, as eight indices fit into a single cache line of the pattern array.</p>
+
+<h2 id="hardware-specific-events">Hardware-specific Events</h2>
+<p>While basic performance metrics such as <em>instructions</em>, <em>cycles</em>, and <em>cache misses</em> shed light on the interplay of hardware and software, modern CPUs offer a far broader spectrum of events to monitor.
+However, it’s important to note that many of these events are specific to the underlying hardware substrate.
+The <em>perf subsystem</em> standardizes only a select group of events universally supported across different processors (<a href="https://github.com/jmuehlig/perf-cpp/blob/dev/docs/counters.md#built-in-events">see a detailed list</a>).
+To discover the full range of events available on specific CPUs, one can utilize the <code>perf list</code> command. 
+Additionally, Intel provides an extensive catalog of events for various architectures on their <a href="https://perfmon-events.intel.com/">perfmon website</a>.</p>
+
+<p>In order to use hardware-specific counters within applications, the readable event names need to be translated into event codes.
+To that end, <a href="https://github.com/wcohen/libpfm4">Libpfm4</a> provides a valuable tool that translates event names (from <code>perf list</code>) into codes.</p>
+
+<p>Let us consider the event <code>CYCLES_NO_RETIRE.NOT_COMPLETE_MISSING_LOAD</code> on the AMD Zen4 architecture as an example.
+The event quantifies the cycles stalled due to pending memory requests, which is particularly insightful for assessing the effects of cache misses on modern systems. 
+Intel offers analogous events, such as <code>CYCLE_ACTIVITY.STALLS_MEM_ANY</code> on the Cascade Lake architecture, and both <code>EXE_ACTIVITY.BOUND_ON_LOADS</code> and <code>EXE_ACTIVITY.BOUND_ON_STORES</code> on the Sapphire Rapids architecture.</p>
+
+<p>After downloading and compiling <em>Libpfm4</em>, developers can fetch the code for a specific event as shown below:</p>
+
+<div class="language-bash highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>./examples/check_events CYCLES_NO_RETIRE.NOT_COMPLETE_MISSING_LOAD
+
+Requested Event: CYCLES_NO_RETIRE.NOT_COMPLETE_MISSING_LOAD
+Actual    Event: amd64_fam19h_zen4::CYCLES_NO_RETIRE:NOT_COMPLETE_MISSING_LOAD:k=1:u=1:e=0:i=0:c=0:h=0:g=0
+PMU            : AMD64 Fam19h Zen4
+IDX            : 1077936192
+Codes          : 0x53a2d6
+</pre></div>
+</div>
+</div>
+
+<p>Incorporating hardware-specific events into an application with <em>perf-cpp</em> would look something like this:</p>
+
+<div class="language-cpp highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;perfcpp/event_counter.h&gt;</span>
+
+<span style="color:#777">/// Initialize the hardware event counter</span>
+<span style="color:#088;font-weight:bold">auto</span> counters = perf::CounterDefinition{};
+counters.add(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">CYCLES_NO_RETIRE.NOT_COMPLETE_MISSING_LOAD</span><span style="color:#710">&quot;</span></span>, <span style="color:#02b">0x53a2d6</span>); <span style="color:#777">// &lt;-- Event code from Libpfm4 output</span>
+<span style="color:#088;font-weight:bold">auto</span> event_counter = perf::EventCounter{ counters };
+
+<span style="color:#777">/// Specify hardware events to count</span>
+event_counter.add({<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">cycles</span><span style="color:#710">&quot;</span></span>, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">CYCLES_NO_RETIRE.NOT_COMPLETE_MISSING_LOAD</span><span style="color:#710">&quot;</span></span>});
+
+<span style="color:#777">/// Setup and execute the benchmark as demonstrated above...</span>
+</pre></div>
+</div>
+</div>
+
+<p>This precise tracking reveals that approximately <code>57</code> of <code>59</code> CPU cycles are spent waiting for memory loads to complete–a finding consistent with the inability of the hardware to predict the benchmark’s random access pattern, relying instead on inherent memory latency:</p>
+
+<div class="language-bash highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>992,091,716 cycles                                      (59.1333 per access)
+967,301,682 CYCLES_NO_RETIRE.NOT_COMPLETE_MISSING_LOAD  (57.6557 per access)
+</pre></div>
+</div>
+</div>
+
+<p>However, thanks to sophisticated out-of-order execution, the hardware effectively masks much of this latency, which on the specific machine to execute the benchmark is around <code>700</code> cycles.</p>
+
+<h2 id="summary">Summary</h2>
+<p>Profiling tools play a crucial role in identifying bottlenecks and aiding developers in optimizing their code. 
+Yet, the broad granularity often means that key code segments tracked with <code>perf stat</code> can be obscured by extraneous data. 
+Libraries like <a href="https://github.com/icl-utk-edu/papi">PAPI</a>, <a href="https://github.com/viktorleis/perfevent">PerfEvent</a>, and <a href="https://github.com/jmuehlig/perf-cpp">perf-cpp</a> offer a solution by allowing direct control over hardware performance counters from within the application itself. 
+By leveraging the <em>perf subsystem</em> (more precisely the <code>perf_event_open</code> system call), these tools enable precise measurements of only the code segments that are truly relevant.</p>
+
+
+          <div class="clearfix"></div>
+			  </div>
+
+        <!-- Prev/Next -->
+        <div class="row PageNavigation mt-4 prevnextlinks d-flex justify-content-between">
+          
+          
+        </div>
+        <!-- End Prev/Next -->
+		  </div>
+		  <!-- End Post -->
+	</div>
+
+<!-- End Article
+================================================== -->
+  
+</main>
+
+<!-- Footer
+================================================== -->    
+<footer class="footer container text-center">  
+
+  <!-- CREDITS BEGIN.-->
+  <!-- If you want to support my work, please donate to remove the credits. This helps me keep it up and running: https://www.wowthemes.net/donate/ -->
+  <!--div class="credits mx-auto text-center mb-3">
+    <a class="hover-opacity font-weight-bold" href="https://bootstrapstarter.com/template-affiliates-bootstrap-jekyll/">
+      <img src="jmuehlig.github.io/assets/images/credits.png" alt="powered by WowThemes">
+    </a>
+  </div-->
+  <!-- CREDITS END -->
+
+  <ul class="p-0 mb-1 small">
+    
+    <li>
+      <a href="jmuehlig.github.io/" alt="Home">Home</a>
+    </li>
+    
+    <li>
+      <a href="jmuehlig.github.io/privacy-policy/" alt="Privacy Policy">Privacy Policy</a>
+    </li>
+    
+    <li>
+      <a href="jmuehlig.github.io/contact/" alt="Contact">Contact</a>
+    </li>
+    
+    </ul>
+    <div class="copyright small">
+       Copyright © jmuehlig.github.io. All rights reserved.
+       |
+       Design powered by <a class="hover-opacity font-weight-bold" href="https://bootstrapstarter.com/template-affiliates-bootstrap-jekyll/">WowThemes</a>.
+       |
+       Logo designed by <a class="hover-opacity font-weight-bold" href="http://www.freepik.com">Freepik</a>.
+    </div>
+</footer>
+
+<!-- JavaScript
+================================================== -->    
+<script src="jmuehlig.github.io/assets/js/jquery.min.js"></script>   
+<script src="jmuehlig.github.io/assets/js/bootstrap.min.js"></script>   
+<script src="jmuehlig.github.io/assets/js/theme.js"></script>    
+<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+</body>
+    
+</html>

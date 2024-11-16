@@ -1,0 +1,17 @@
+/* 
+Don't want to use sass and simply modify the stylesheet in the old css fashion? 
+Just customize your theme here.
+================================================== */
+
+body {}
+
+.code pre {
+  margin-left: 5px;
+  padding-left: 10px;
+  border-left: 5px solid #CCC;
+  font-size: 14px;
+}
+
+h2 {
+  font-size: 28px;
+}
