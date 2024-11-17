@@ -160,9 +160,13 @@ This limitation is particularly challenging when analyzing micro-benchmarks, whe
 <p>At their core, these tools leverage <em>Performance Monitoring Units</em> (PMUs)–specialized components designed to track hardware events like <em>cache misses</em> and <em>branch mispredictions</em>.
 Although these tools are far more powerful, this discussion will focus on the essentials of hardware event counting.</p>
 
+<h3 id="scenario-random-access-pattern">Scenario: Random Access Pattern</h3>
 <p>Consider a random access micro-benchmark designed to access a set of <em>cache lines</em> in a random sequence—a scenario that typically baffles the data prefetcher (<a href="https://github.com/jmuehlig/blog-resource/tree/main/01-profiling-specific-code-segments">see the full source code</a>).
-This pattern often results in roughly <strong>one cache miss per access</strong> within a contiguous data array. 
-The following <a href="https://perfwiki.github.io/main/tutorial/#counting-with-perf-stat"><code>perf stat</code> command</a> tracks low-level hardware events like <em>L1 data cache</em> accesses and references  during the micro-benchmark’s execution:</p>
+The benchmark employs two distinct arrays: one holding the data and another containing indices that establish the random access pattern. 
+After initializing these arrays, we execute the micro-benchmark by sequentially scanning through the indices array and access data from the data array, a method that generally leads to approximately <strong>one cache miss per access</strong> within the contiguous data array.</p>
+
+<h3 id="perf-stat">Perf Stat</h3>
+<p>To observe the underlying hardware dynamics, we utilize the <a href="https://perfwiki.github.io/main/tutorial/#counting-with-perf-stat"><code>perf stat</code> command</a>, which quantifies low-level hardware events such as <em>L1 data cache</em> accesses and references during the execution of the micro-benchmark:</p>
 
 <div class="language-bash highlighter-coderay"><div class="CodeRay">
   <div class="code"><pre>perf stat -e instructions,cycles,L1-dcache-loads,L1-dcache-load-misses -- ./random-access-bench --size 16777216
@@ -278,7 +282,7 @@ Additionally, Intel provides an extensive catalog of events for various architec
 To that end, <a href="https://github.com/wcohen/libpfm4">Libpfm4</a> provides a valuable tool that translates event names (from <code>perf list</code>) into codes.</p>
 
 <p>Let us consider the event <code>CYCLES_NO_RETIRE.NOT_COMPLETE_MISSING_LOAD</code> on the AMD Zen4 architecture as an example.
-The event quantifies the cycles stalled due to pending memory requests, which is particularly insightful for assessing the effects of cache misses on modern systems. 
+The event quantifies the CPU cycles stalled due to pending memory requests, which is particularly insightful for assessing the effects of cache misses on modern systems. 
 Intel offers analogous events, such as <code>CYCLE_ACTIVITY.STALLS_MEM_ANY</code> on the Cascade Lake architecture, and both <code>EXE_ACTIVITY.BOUND_ON_LOADS</code> and <code>EXE_ACTIVITY.BOUND_ON_STORES</code> on the Sapphire Rapids architecture.</p>
 
 <p>After downloading and compiling <em>Libpfm4</em>, developers can fetch the code for a specific event as shown below:</p>
